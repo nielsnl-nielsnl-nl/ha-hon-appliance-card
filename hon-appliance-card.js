@@ -22,7 +22,7 @@
 //                        programmes: [...]                    optional full list for the "All programmes" search
 
 
-const HON_CARD_VERSION = "1.1.0";
+const HON_CARD_VERSION = "2.0.0";
 
 // Built-in pictures (illustrations drawn for this card), so it's a single file that installs through HACS.
 const HON_IMG = {
