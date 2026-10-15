@@ -42,7 +42,7 @@ Both cards are in one file, with the pictures built in.
 
 1. Download `hon-appliance-card.js` from the [latest release](../../releases/latest).
 2. Copy it to `config/www/hon-appliance-card.js`.
-3. Go to **Settings → Dashboards → ⋮ → Resources**, add `/local/hon-appliance-card.js?v=1.0.0` as a **JavaScript module**, then reload your browser.
+3. Go to **Settings → Dashboards → ⋮ → Resources**, add `/local/hon-appliance-card.js?v=1.1.0` as a **JavaScript module**, then reload your browser.
 
 ## Use
 
@@ -87,9 +87,41 @@ entity: hoover_washer
 | `colour` | both | Accent colour, e.g. `"#4fb3ff"` |
 | `max_width` | appliance | How wide the machine can get, e.g. `380px` |
 | `style` | appliance | `photo` (default, H-WASH 500 / H-DRY 500 style illustrations) or `drawn` (a simple drawing that suits any front loader) |
-| `images` | appliance | Folder with your own `washer.svg`, `dryer.svg` and `laundry-drum.webp`, e.g. `/local/myimg/` |
+| `finish` | appliance | Colour of the built-in machines: `white` (default), `graphite` or `black` |
+| `images` | appliance | Folder with your own pictures, e.g. `/local/myimg/` (see [Your own pictures](#your-own-pictures)) |
 | `favourites` | programmes | Programme buttons to show, as hOn programme keys such as `iot_wash_cotton` |
 | `programmes` | programmes | Full list for the "All programmes" search |
+
+### Machine colour
+
+Got a dark machine? Add `finish: graphite` or `finish: black` to the appliance card. The door ring, knob and glass stay silver and dark, like the real thing.
+
+```yaml
+type: custom:hon-appliance-card
+appliance: washer
+finish: graphite
+```
+
+![White, graphite and black finishes](images/finishes.webp)
+
+### Your own pictures
+
+You can swap the built-in machines for your own. Put the files in a folder under `config/www/`, for example `config/www/myimg/`, and point the card at it:
+
+```yaml
+type: custom:hon-appliance-card
+appliance: washer
+images: /local/myimg/
+```
+
+The card looks for these names in that folder:
+
+- `washer.svg` (washer card) and `dryer.svg` (dryer card): the machine, front on
+- `laundry-drum.webp`: the clothes that turn behind the glass
+
+Include all three, because the card takes every picture from that folder once `images` is set.
+
+To make the progress ring, display and icons line up, draw your machine the same way as the built-in ones: **600 × 850** (portrait), door centre at **298, 352**, glass about **372** across (washer) or **384** (dryer), and the display at the top right, about **374, 10** to **565, 74**. Your own pictures replace `finish`.
 
 ### Finding your programme keys
 
