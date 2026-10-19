@@ -14,6 +14,9 @@
 //                                         defaults: washing_machine for the washer, tumble_dryer for the dryer
 //   name: Washer                          card title
 //   colour: "#4fb3ff"                     accent colour
+//   names:                                your own programme names, by programme key or by the name the card shows, e.g.
+//     iot_wash_cotton: Baumwolle            (buttons, search, the "Start ...?" question and the Programme line)
+//     Mixed: Mischwäsche
 // Appliance card only:   max_width: 380px
 //                        style: photo | drawn    photo (default) = built-in H-WASH 500 / H-DRY 500 style illustrations; drawn = a simple built-in drawing
 //                        finish: white | graphite | black    colour of the built-in machines (default white)
@@ -22,7 +25,7 @@
 //                        programmes: [...]                    optional full list for the "All programmes" search
 
 
-const HON_CARD_VERSION = "2.0.0";
+const HON_CARD_VERSION = "2.0.1";
 
 // Built-in pictures (illustrations drawn for this card), so it's a single file that installs through HACS.
 const HON_IMG = {
@@ -79,7 +82,11 @@ const LABELS = { eco_40_60_new_energy_label: "Eco 40-60", eco: "Eco Cotton", all
   iot_wash_rapid_14: "Rapid 14'", iot_wash_rapid_30: "Rapid 30'", iot_wash_rapid_44: "Rapid 44'", iot_wash_rapid_59: "Rapid 59'",
   iot_dry_rapid_30: "Rapid 30'", iot_dry_rapid_59: "Rapid 59'", iot_dry_easy_iron_cotton: "Easy Iron", all_in_one: "All in One",
   auto_care: "Auto Care", relax_creases: "Relax Creases", iot_dry_denim_jeans: "Jeans" };
-const label = k => LABELS[k] || String(k).replace(/^iot_(wash|dry)_/, "").replace(/^iot_/, "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+const label = (k, names) => {
+  const auto = LABELS[k] || String(k).replace(/^iot_(wash|dry)_/, "").replace(/^iot_/, "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+  // names: the user's own names, keyed by programme key or by the name the card would show
+  return names?.[k] ?? names?.[auto] ?? auto;
+};
 const DEFAULTS = {
   washer: { entity: "washing_machine", title: "Washer", colour: "#4fb3ff",
             favourites: ["iot_wash_cotton", "eco_40_60_new_energy_label", "iot_wash_mixed", "iot_wash_synthetic", "iot_wash_delicate", "iot_wash_wool",
@@ -97,7 +104,8 @@ function setup(c) {
   const d = DEFAULTS[c.appliance];
   return { ...c, entity: c.entity || d.entity, title: c.name || d.title, colour: c.colour || d.colour,
     style: c.style === "drawn" ? "drawn" : "photo", images: c.images ? c.images.replace(/\/?$/, "/") : "",
-    finish: FINISH_NAMES[String(c.finish || "").toLowerCase()] || "white" };
+    finish: FINISH_NAMES[String(c.finish || "").toLowerCase()] || "white",
+    names: c.names && typeof c.names === "object" ? Object.fromEntries(Object.entries(c.names).map(([k, v]) => [String(k), String(v)])) : {} };
 }
 
 const GEOM = {
@@ -282,9 +290,9 @@ class HonApplianceCard extends HTMLElement {
     const code = this._val("program_code"), prog = this._val("program_name");
     try {
       const mine = JSON.parse(localStorage.getItem(`hon-started-${this._config.entity}`) || "null");
-      if (mine && powered && Date.now() - mine.at < 6 * 3600e3) return label(mine.k);
+      if (mine && powered && Date.now() - mine.at < 6 * 3600e3) return label(mine.k, this._config.names);
     } catch (e) {}
-    if (prog && !["No program", "home_assistant"].includes(prog)) return label(prog);
+    if (prog && !["No program", "home_assistant"].includes(prog)) return label(prog, this._config.names);
     return code != null && code !== "0" ? `Programme #${code}` : "—";
   }
 
@@ -408,14 +416,14 @@ class HonProgrammesCard extends HTMLElement {
   _build() {
     const c = this._config, all = c.programmes || [];
     const favs = c.favourites || DEFAULTS[c.appliance].favourites;
-    const btn = k => `<button class="prog" data-k="${esc(k)}">${esc(label(k))}</button>`;
+    const btn = k => `<button class="prog" data-k="${esc(k)}">${esc(label(k, c.names))}</button>`;
     const r = this.attachShadow({ mode: "open" });
     r.innerHTML = `<style>${PCSS}</style><ha-card style="--c:${esc(c.colour)}">
       <div class="head"><span>${esc(c.title)} programmes</span><button class="small" id="more" ${all.length ? "" : "hidden"}>All programmes</button></div>
       <div class="note" id="note" hidden></div>
       <div class="grid" id="favs">${favs.map(btn).join("")}</div>
       <div class="all" id="all" hidden><input id="q" type="search" placeholder="Search ${all.length} programmes">
-        <div class="grid" id="list">${[...all].sort((x, y) => label(x).localeCompare(label(y))).map(btn).join("")}</div></div>
+        <div class="grid" id="list">${[...all].sort((x, y) => label(x, c.names).localeCompare(label(y, c.names))).map(btn).join("")}</div></div>
       <div class="confirm" id="confirm" hidden><span id="ask"></span>
         <button class="small" id="no">Cancel</button><button class="small go" id="yes">Start</button></div>
     </ha-card>`;
@@ -441,7 +449,7 @@ class HonProgrammesCard extends HTMLElement {
     this._sel = k;
     r.querySelectorAll(".prog").forEach(b => b.classList.toggle("sel", b.dataset.k === k));
     r.getElementById("confirm").hidden = !k;
-    if (k) r.getElementById("ask").textContent = `Start ${label(k)} on the ${this._config.title.toLowerCase()}?`;
+    if (k) r.getElementById("ask").textContent = `Start ${label(k, this._config.names)} on the ${this._config.title.toLowerCase()}?`;
   }
   async _start() {
     const k = this._sel, c = this._config, dev = this._hass?.entities?.[`binary_sensor.${c.entity}_status`]?.device_id;

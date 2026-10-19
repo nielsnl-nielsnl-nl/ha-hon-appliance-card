@@ -42,7 +42,7 @@ Both cards are in one file, with the pictures built in.
 
 1. Download `hon-appliance-card.js` from the [latest release](../../releases/latest).
 2. Copy it to `config/www/hon-appliance-card.js`.
-3. Go to **Settings → Dashboards → ⋮ → Resources**, add `/local/hon-appliance-card.js?v=2.0.0` as a **JavaScript module**, then reload your browser.
+3. Go to **Settings → Dashboards → ⋮ → Resources**, add `/local/hon-appliance-card.js?v=2.0.1` as a **JavaScript module**, then reload your browser.
 
 ## Use
 
@@ -91,6 +91,7 @@ entity: hoover_washer
 | `images` | appliance | Folder with your own pictures, e.g. `/local/myimg/` (see [Your own pictures](#your-own-pictures)) |
 | `favourites` | programmes | Programme buttons to show, as hOn programme keys such as `iot_wash_cotton` |
 | `programmes` | programmes | Full list for the "All programmes" search |
+| `names` | both | Your own programme names (see [Your own programme names](#your-own-programme-names)) |
 
 ### Machine colour
 
@@ -122,6 +123,21 @@ The card looks for these names in that folder:
 Include all three, because the card takes every picture from that folder once `images` is set.
 
 To make the progress ring, display and icons line up, draw your machine the same way as the built-in ones: **600 × 850** (portrait), door centre at **298, 352**, glass about **372** across (washer) or **384** (dryer), and the display at the top right, about **374, 10** to **565, 74**. Your own pictures replace `finish`.
+
+### Your own programme names
+
+The hOn integration doesn't pass on the names from the hOn app, only programme keys such as `iot_wash_cotton`, so the card makes its own English names from those. To use the names you know, for example in your own language or the ones you saved in the app, add `names`. Give each programme by its key or by the name the card shows now:
+
+```yaml
+type: custom:hon-programmes-card
+appliance: washer
+names:
+  iot_wash_cotton: Baumwolle
+  Mixed: Mischwäsche
+  "Rapid 30'": "Schnell 30'"
+```
+
+Your names are used on the buttons, in the search, in the "Start …?" question, and on the Programme line of the appliance card. Add the same `names` to the appliance card if you want it there too.
 
 ### Finding your programme keys
 
