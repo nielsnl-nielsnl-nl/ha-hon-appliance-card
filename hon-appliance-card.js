@@ -27,7 +27,7 @@
 //                        programmes: [...]                    optional full list for the "All programmes" search
 
 
-const HON_CARD_VERSION = "2.1.0";
+const HON_CARD_VERSION = "2.1.1";
 
 // Built-in pictures (illustrations drawn for this card), so it's a single file that installs through HACS.
 const HON_IMG = {
@@ -377,6 +377,20 @@ class HonApplianceCard extends HTMLElement {
     // completion_time is the finish timestamp; when idle it can be stale, so only trust it when it's ahead
     let end = Date.parse(this._val("completion_time") || "");
     if (!on && !(end > Date.now())) end = NaN;
+    // not every Samsung reports progress, so remember when the cycle began and work it out from completion_time.
+    // The first time we see it running, that's when machine_state last turned to run (pausing later doesn't move it).
+    const key = `hon-st-start-${dev}`;
+    let start = NaN;
+    try {
+      if (on) {
+        start = Number(localStorage.getItem(key));
+        if (!start || (end > 0 && end - start > 12 * 3600e3)) {   // none yet, or left over from an older cycle
+          const since = Date.parse(this._st(`sensor.${dev}_machine_state`)?.last_changed || "");
+          start = machine === "run" && since < Date.now() ? since : Date.now();
+          localStorage.setItem(key, String(start));
+        }
+      } else localStorage.removeItem(key);
+    } catch (e) { start = on ? Date.parse(this._st(`sensor.${dev}_machine_state`)?.last_changed || "") : NaN; }
     const sel = k => this._st(`select.${dev}_${k}`)?.state;
     const rows = [];
     if (washer) {
@@ -387,8 +401,8 @@ class HonApplianceCard extends HTMLElement {
     }
     rows.push(["Status", on ? ST.machine[machine] : done ? "Finished" : powered ? "Ready" : "Off"]);
     rows.push(["Ends", isNaN(end) || !on ? "—" : hhmm(new Date(end))]);
-    return { powered, on, done, cool, paused: machine === "pause", phase, pill, start: NaN, end,
-      pct: on && !isNaN(progress) ? progress : null, rows,
+    return { powered, on, done, cool, paused: machine === "pause", phase, pill, start, end,
+      pct: on && progress > 0 ? progress : null, rows,   // missing or stuck at 0: fall back to start -> completion_time
       canOff: !!power, canStart: powered && !on && !!this._st(`select.${dev}`), door: null };
   }
 

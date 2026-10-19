@@ -42,7 +42,7 @@ Both cards are in one file, with the pictures built in.
 
 1. Download `hon-appliance-card.js` from the [latest release](../../releases/latest).
 2. Copy it to `config/www/hon-appliance-card.js`.
-3. Go to **Settings → Dashboards → ⋮ → Resources**, add `/local/hon-appliance-card.js?v=2.1.0` as a **JavaScript module**, then reload your browser.
+3. Go to **Settings → Dashboards → ⋮ → Resources**, add `/local/hon-appliance-card.js?v=2.1.1` as a **JavaScript module**, then reload your browser.
 
 ## Use
 
