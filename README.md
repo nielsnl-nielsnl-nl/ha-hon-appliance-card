@@ -2,6 +2,10 @@
 
 Dashboard cards for washing machines and tumble dryers in the **hOn** app (**Haier, Candy, Hoover**). The machine looks like the real thing: the time left on its own display, a progress ring round the door, laundry spinning in the drum, and buttons to pause it or start a programme without walking to the utility room.
 
+**📖 [Step-by-step guide and live demo](https://mymediabuild.uk/home-assistant-washer-dryer-card/)** · **☕ [Buy me a coffee](https://buymeacoffee.com/bobgreggr)**
+
+> **Want more?** Version 3 of this card is free on [my website](https://mymediabuild.uk/home-assistant-washer-dryer-card/): cycle details, every washing function, and the drying options when you press Start.
+
 ![Washer and dryer card demo](images/demo.gif)
 
 ## What it does
@@ -142,6 +146,14 @@ Your names are used on the buttons, in the search, in the "Start …?" question,
 ### Finding your programme keys
 
 The programmes card starts a cycle with the `hon.start_program` action, using the programme's default temperature and spin. To see which keys your machine accepts, go to **Developer tools → Actions**, pick **hon.start_program**, choose your machine and enter a made-up programme such as `test`. The error lists every programme it accepts. Put the ones you use most in `favourites`.
+
+## Support and requests
+
+I build and look after this card in my spare time.
+
+- **Found a bug?** [Open an issue](../../issues/new/choose) and fill in the form. A screenshot and the entity list help a lot.
+- **Want another brand or integration?** Pull requests are very welcome. I can only test machines I own, so I can't promise to add new ones myself. Use the "Support for another machine" form so all the details are in one place.
+- **Like the card?** A ⭐ on GitHub helps other people find it, and you can [buy me a coffee](https://buymeacoffee.com/bobgreggr) ☕. More free Home Assistant cards and guides at [mymediabuild.uk](https://mymediabuild.uk).
 
 ## Thanks
 
