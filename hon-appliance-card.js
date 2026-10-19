@@ -403,7 +403,7 @@ class HonApplianceCard extends HTMLElement {
     rows.push(["Ends", isNaN(end) || !on ? "—" : hhmm(new Date(end))]);
     return { powered, on, done, cool, paused: machine === "pause", phase, pill, start, end,
       pct: on && progress > 0 ? progress : null, rows,   // missing or stuck at 0: fall back to start -> completion_time
-      canOff: !!power, canStart: powered && !on && !!this._st(`select.${dev}`), door: null };
+      canOff: !!power, canStart: powered && !on && !done && !!this._st(`select.${dev}`), door: null };
   }
 
   _render() {
