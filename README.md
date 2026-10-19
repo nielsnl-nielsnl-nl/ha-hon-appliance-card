@@ -2,6 +2,10 @@
 
 Dashboard cards for washing machines and tumble dryers in the **hOn** app (**Haier, Candy, Hoover**), and for **Samsung** machines through SmartThings ([see below](#samsung-smartthings)). The machine looks like the real thing: the time left on its own display, a progress ring round the door, laundry spinning in the drum, and buttons to pause it or start a programme without walking to the utility room.
 
+**📖 [Step-by-step guide and live demo](https://mymediabuild.uk/home-assistant-washer-dryer-card/)** · **☕ [Buy me a coffee](https://buymeacoffee.com/bobgreggr)**
+
+> **Want more?** Version 3 of this card is free on [my website](https://mymediabuild.uk/home-assistant-washer-dryer-card/): cycle details, every washing function, and the drying options when you press Start.
+
 ![Washer and dryer card demo](images/demo.gif)
 
 ## What it does
@@ -92,6 +96,7 @@ entity: hoover_washer
 | `images` | appliance | Folder with your own pictures, e.g. `/local/myimg/` (see [Your own pictures](#your-own-pictures)) |
 | `favourites` | programmes | Programme buttons to show, as hOn programme keys such as `iot_wash_cotton` |
 | `programmes` | programmes | Full list for the "All programmes" search |
+| `names` | both | Your own programme names (see [Your own programme names](#your-own-programme-names)) |
 
 ### Machine colour
 
@@ -123,6 +128,21 @@ The card looks for these names in that folder:
 Include all three, because the card takes every picture from that folder once `images` is set.
 
 To make the progress ring, display and icons line up, draw your machine the same way as the built-in ones: **600 × 850** (portrait), door centre at **298, 352**, glass about **372** across (washer) or **384** (dryer), and the display at the top right, about **374, 10** to **565, 74**. Your own pictures replace `finish`.
+
+### Your own programme names
+
+The hOn integration doesn't pass on the names from the hOn app, only programme keys such as `iot_wash_cotton`, so the card makes its own English names from those. To use the names you know, for example in your own language or the ones you saved in the app, add `names`. Give each programme by its key or by the name the card shows now:
+
+```yaml
+type: custom:hon-programmes-card
+appliance: washer
+names:
+  iot_wash_cotton: Baumwolle
+  Mixed: Mischwäsche
+  "Rapid 30'": "Schnell 30'"
+```
+
+Your names are used on the buttons, in the search, in the "Start …?" question, and on the Programme line of the appliance card. Add the same `names` to the appliance card if you want it there too.
 
 ### Finding your programme keys
 
